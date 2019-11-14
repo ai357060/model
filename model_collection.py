@@ -370,6 +370,16 @@ def ExamineMLP(masterframe,Xintex,X_train, y_train,X_test, y_test,featurenames,t
     activation = ['tanh','identity', 'logistic', 'tanh', 'relu']   # ['tanh','identity', 'logistic', 'tanh', 'relu']
     alpha = [0.00001,0.0001,0.01,0.1,1]  #'auto'
     max_iter= [100,1000]
+# learning_rate_init : double, optional, default 0.001 The initial learning rate used. It controls the step-size in updating the weights. Only used when solver=’sgd’ or ‘adam’.
+# shuffle : bool, optional, default True
+# beta_1 : float, optional, default 0.9
+# Exponential decay rate for estimates of first moment vector in adam, should be in [0, 1). Only used when solver=’adam’
+
+# beta_2 : float, optional, default 0.999
+# Exponential decay rate for estimates of second moment vector in adam, should be in [0, 1). Only used when solver=’adam’
+
+# epsilon : float, optional, default 1e-8
+# Value for numerical stability in adam. Only used when solver=’adam’
 
 # test one model
     if testone == True:
