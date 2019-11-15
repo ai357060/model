@@ -289,7 +289,7 @@ def ExamineSVC(masterframe,Xintex,X_train, y_train,X_test, y_test,featurenames,t
     if testone == True:
         kernel = ['rbf'] 
         C = [100]
-        gamma = [1]   
+        gamma = [0.01]   
         max_iter = [-1]  
         degree = [2]
         timeout = 5
@@ -478,10 +478,10 @@ def PrepareResults(masterframe,logreg,X_train,X_test,y_train,y_test,Xintex,testo
     res3, profitdf3 = ExamineProfit3(masterframe, Xintex, y_test, proba0,proba1,0,tecal,atr)
     res4, profitdf4 = ExamineProfit4(masterframe, Xintex, y_test, proba0,proba1,0,tecal,atr)
     if testone == True:
-        profitdf1.to_csv(sep=';',path_or_buf='Resu/temp_EP1_'+str(int(time.time()))+'.csv',date_format="%Y-%m-%d")
-        profitdf2.to_csv(sep=';',path_or_buf='Resu/temp_EP2_'+str(int(time.time()))+'.csv',date_format="%Y-%m-%d")
-        profitdf3.to_csv(sep=';',path_or_buf='Resu/temp_EP3_'+str(int(time.time()))+'.csv',date_format="%Y-%m-%d")
-        profitdf4.to_csv(sep=';',path_or_buf='Resu/temp_EP4_'+str(int(time.time()))+'.csv',date_format="%Y-%m-%d")
+        profitdf1.to_csv(sep=';',path_or_buf='../Resu/temp_EP1_'+str(int(time.time()))+'.csv',date_format="%Y-%m-%d")
+        profitdf2.to_csv(sep=';',path_or_buf='../Resu/temp_EP2_'+str(int(time.time()))+'.csv',date_format="%Y-%m-%d")
+        profitdf3.to_csv(sep=';',path_or_buf='../Resu/temp_EP3_'+str(int(time.time()))+'.csv',date_format="%Y-%m-%d")
+        profitdf4.to_csv(sep=';',path_or_buf='../Resu/temp_EP4_'+str(int(time.time()))+'.csv',date_format="%Y-%m-%d")
 
     linear_resdict = {
         'Tr acc': "{:10.1f}".format(logreg.score(X_train, y_train)*100),

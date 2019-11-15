@@ -696,7 +696,7 @@ def fourier(prices, periods):
         warnings.filterwarnings('ignore',category=np.VisibleDeprecationWarning)
         resdf = resdf.set_index(resdf.date)
         resdf = resdf[['a0','a1','b1','w']]
-        resdf = resdf.fillna(0) #df = df.fillna(method='bfill')
+        #resdf = resdf.fillna(0) #df = df.fillna(method='bfill')
         dict[periods[i]]=resdf
     results.df = dict
     return results
@@ -755,7 +755,7 @@ def sine(prices, periods, method = 'difference'):
         warnings.filterwarnings('ignore',category=np.VisibleDeprecationWarning)
         resdf = resdf.set_index(resdf.date)
         resdf = resdf[['a0','b1','w']]
-        resdf = resdf.fillna(0) #df = df.fillna(method='bfill')
+        #resdf = resdf.fillna(0) #df = df.fillna(method='bfill')
         dict[periods[i]]=resdf
     results.df = dict
     return results
