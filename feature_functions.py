@@ -19,8 +19,8 @@ class holder:
 
 slopeperiods = [3,4,5,10,20,30]    
 
-def loaddata_master(datafile='usdjpy_d.csv'):
-    df = pd.read_csv('C:/Users/pioo/Desktop/Temp/jpynotebooks/WinMachine/Data/'+datafile,sep=';')
+def loaddata_master(datafile='uj_d.csv'):
+    df = pd.read_csv('C:/Users/pioo/Desktop/Temp/jpynotebooks/wm/Data/'+datafile,sep=';')
     try:
         df.fulldate=pd.to_datetime(df.fulldate,format='%Y-%m-%d')
     except:
@@ -28,8 +28,8 @@ def loaddata_master(datafile='usdjpy_d.csv'):
 
     return df
 
-def loaddata(datafile='usdjpy_d.csv'):
-    df = pd.read_csv('C:/Users/pioo/Desktop/Temp/jpynotebooks/WinMachine/Data/'+datafile)
+def loaddata(datafile='uj_d.csv'):
+    df = pd.read_csv('C:/Users/pioo/Desktop/Temp/jpynotebooks/wm/Data/'+datafile)
     #df.columns = ['date','open','high','low','close']
     try:
         df.date=pd.to_datetime(df.date,format='%Y-%m-%d')
@@ -44,7 +44,7 @@ def loaddata(datafile='usdjpy_d.csv'):
     df = df.drop(['date'],1)
     return df
     
-def loaddata_nodateindex(datafile='usdjpy_d.csv'):
+def loaddata_nodateindex(datafile='uj_d.csv'):
     df = pd.read_csv('../Data/'+datafile)
     #df.columns = ['date','open','high','low','close']
     try:
