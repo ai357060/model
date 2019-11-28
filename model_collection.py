@@ -479,7 +479,7 @@ def ExamineNN(masterframe,Xintex,datamasterframe,featurenames,testone,plot):
     learn = tabular_learner(data, layers=[400,200,100], metrics=accuracy, silent = False)
 #     learn.lr_find(end_lr=100)
 #     learn.recorder.plot()
-    learn.fit(20,lr=1e-4)
+    learn.fit(50,lr=1e-4)
     
     return linear_resdf
 
