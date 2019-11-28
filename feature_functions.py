@@ -661,7 +661,8 @@ def fourier(prices, periods):
         for j in range(periods[i] - 1,len(prices)): 
             x = np.arange(0,periods[i])
 #             y = detrended.iloc[j - periods[i] + 1:j+1] 
-            y = 100 * (np.log(prices.close.iloc[j - periods[i] + 1:j+1])-np.log(prices.close.iloc[j]))
+#             y = 100 * (np.log(prices.close.iloc[j - periods[i] + 1:j+1])-np.log(prices.close.iloc[j]))
+            y = 1 * ((prices.close.iloc[j - periods[i] + 1:j+1]) - (prices.close.iloc[j]))
             #TODO: może różnice powinny być podane w procentach?a może nie. a może rożnica logarytmów(done)
             #TOFO: nie wiem w sumie czy to powinno się nazywać detrend. Chodzi o to, aby mieć lokalne wahania, aby na tym obliczyć fouriera.
             # done TODO: 1. zamiast odejmować close[j]-close[j-1] można zrobić tak, że od wszyskich close z okna odejmujemy close z początku okna
@@ -726,7 +727,8 @@ def sine(prices, periods, method = 'difference'):
         for j in range(periods[i] - 1,len(prices)): 
             x = np.arange(0,periods[i])
 #             y = detrended.iloc[j - periods[i] + 1:j+1] 
-            y = 100 * (np.log(prices.close.iloc[j - periods[i] + 1:j+1])-np.log(prices.close.iloc[j]))
+#             y = 100 * (np.log(prices.close.iloc[j - periods[i] + 1:j+1])-np.log(prices.close.iloc[j]))
+            y = 1 * ((prices.close.iloc[j - periods[i] + 1:j+1]) - (prices.close.iloc[j]))
             
             with warnings.catch_warnings():
                 warnings.simplefilter('error', OptimizeWarning)

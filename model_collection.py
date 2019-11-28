@@ -14,6 +14,7 @@ import multiprocessing
 import time
 import os
 from fastai.tabular import *
+import glob
 
 #import threading 
 #import ctypes 
@@ -448,9 +449,12 @@ def ExamineNN(masterframe,Xintex,datamasterframe,featurenames,testone,plot):
 
     cwd = os.getcwd()
     path = cwd
-    dep_var = 'y'
-    cat_names = ['month__1','month__2','month__3','month__4','month__5','month__6','month__7','month__8','month__9','month__10','month__11','month__12','day__1','day__2','day__3','day__4','day__5','day__6','day__7','day__8','day__9','day__10','day__11','day__12','day__13','day__14','day__15','day__16','day__17','day__18','day__19','day__20','day__21','day__22','day__23','day__24','day__25','day__26','day__27','day__28','day__29','day__30','day__31','weekday__1','weekday__2','weekday__3','weekday__4','weekday__6','weekday__7']
-    cont_names = set(featurenames) - set(cat_names)
+    dep_var = datamasterframe.columns[-1]
+    cat_names = []
+    cont_names = datamasterframe.columns[1:-1]
+#     dep_var = 'y'
+#     cat_names = ['month__1','month__2','month__3','month__4','month__5','month__6','month__7','month__8','month__9','month__10','month__11','month__12','day__1','day__2','day__3','day__4','day__5','day__6','day__7','day__8','day__9','day__10','day__11','day__12','day__13','day__14','day__15','day__16','day__17','day__18','day__19','day__20','day__21','day__22','day__23','day__24','day__25','day__26','day__27','day__28','day__29','day__30','day__31','weekday__1','weekday__2','weekday__3','weekday__4','weekday__6','weekday__7']
+#     cont_names = set(featurenames) - set(cat_names)
     procs = [FillMissing, Categorify, Normalize]
 
     linear_resdf = pd.DataFrame(columns=['proctime','solver','layers','activation','max_iter','alpha','Tr acc','Te acc','Te_cal','Mess'
@@ -458,10 +462,10 @@ def ExamineNN(masterframe,Xintex,datamasterframe,featurenames,testone,plot):
 ,'Te_0_50','Te_0_50_cnt','Te_0_60','Te_0_60_cnt','Te_0_70','Te_0_70_cnt','Te_0_80','Te_0_80_cnt','Te_0_90','Te_0_90_cnt'
 ,'Te_1_50','Te_1_50_cnt','Te_1_60','Te_1_60_cnt','Te_1_70','Te_1_70_cnt','Te_1_80','Te_1_80_cnt','Te_1_90','Te_1_90_cnt'])
     
-    
     data = (TabularList.from_df(datamasterframe, path=path, cat_names=cat_names, cont_names=cont_names, procs=procs)
-                          #  .split_by_rand_pct(valid_pct=0.25, seed=42)
-                           .split_by_idx(list(range(3000,4115)))
+#                            .split_by_rand_pct(valid_pct=0.25, seed=42)
+#                            .split_by_idx(list(range(3000,4115)))
+                           .split_by_idx(datamasterframe[datamasterframe[0].isin(Xintex.astype(int))].index)
                            .label_from_df(cols=dep_var)
                            .databunch(bs=64))
     
@@ -470,6 +474,12 @@ def ExamineNN(masterframe,Xintex,datamasterframe,featurenames,testone,plot):
                           ,[10,10,10],[100,100,100],[400,400,400],[800,800,800]
                           ,[10,10,10,10],[100,100,100,100],[400,400,400,400],[800,800,800,800]]
     
+    
+#     learn = tabular_learner(data, layers=[400,200,100], metrics=accuracy, emb_drop=0.7,wd=0.01, silent = False)
+    learn = tabular_learner(data, layers=[400,200,100], metrics=accuracy, silent = False)
+#     learn.lr_find(end_lr=100)
+#     learn.recorder.plot()
+    learn.fit(1,lr=1e-4)
     
     return linear_resdf
 
@@ -559,6 +569,10 @@ def PrepareResults(masterframe,logreg,X_train,X_test,y_train,y_test,Xintex,testo
                                                     , tecal
                                                    ,proctime))
     
+    for f in glob.glob("spin*"):
+        os.remove(f)
+    filename = 'spin'+ datetime.datetime.now().strftime("%d%m%y %H%M%S")
+    open(filename,'x').close()
     
     return linear_resdict
 
