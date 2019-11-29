@@ -457,7 +457,7 @@ def ExamineNN(masterframe,Xintex,datamasterframe,featurenames,testone,plot):
 #     cont_names = set(featurenames) - set(cat_names)
     procs = [FillMissing, Categorify, Normalize]
 
-    linear_resdf = pd.DataFrame(columns=['proctime','solver','layers','activation','max_iter','alpha','Tr acc','Te acc','Te_cal','Mess'
+    linear_resdf = pd.DataFrame(columns=['proctime','emb_drop','layers','lr','wd','epoch','Tr acc','Te acc','Te_cal','Mess'
                                          ,'Tr_1_cnt','Te_1_cnt','Tr_0_acc','Tr_1_acc','Te_cnt'
 ,'Te_0_50','Te_0_50_cnt','Te_0_60','Te_0_60_cnt','Te_0_70','Te_0_70_cnt','Te_0_80','Te_0_80_cnt','Te_0_90','Te_0_90_cnt'
 ,'Te_1_50','Te_1_50_cnt','Te_1_60','Te_1_60_cnt','Te_1_70','Te_1_70_cnt','Te_1_80','Te_1_80_cnt','Te_1_90','Te_1_90_cnt'])
@@ -469,17 +469,71 @@ def ExamineNN(masterframe,Xintex,datamasterframe,featurenames,testone,plot):
                            .label_from_df(cols=dep_var)
                            .databunch(bs=64))
     
+    emb_drop = [0.2,0.5,0.7]
     hidden_layer_sizes = [[10],[100],[400],[800]
                           ,[10,10],[100,100],[400,400],[800,800]
                           ,[10,10,10],[100,100,100],[400,400,400],[800,800,800]
                           ,[10,10,10,10],[100,100,100,100],[400,400,400,400],[800,800,800,800]]
-    
+    lr = [1e-4,1e-3,1e-2]
+    wd = [0.5,0.1,0.01]
+    epoch = [3,6,9]
     
 #     learn = tabular_learner(data, layers=[400,200,100], metrics=accuracy, emb_drop=0.7,wd=0.01, silent = False)
-    learn = tabular_learner(data, layers=[400,200,100], metrics=accuracy, silent = False)
 #     learn.lr_find(end_lr=100)
 #     learn.recorder.plot()
-    learn.fit(50,lr=1e-4)
+    
+
+    
+    atr = masterframe.atr14tr.mean()    
+    for i_emb_drop in emb_drop:
+        for i_hidden_layer_sizes in hidden_layer_sizes:
+            for i_lr in lr:                
+                for i_wd in wd:  
+                    for i_epoch in epoch:
+                        try:
+                            with warnings.catch_warnings(record=True) as efitwarn:
+                                starttime = datetime.datetime.now()
+                                print(starttime,i_emb_drop,i_hidden_layer_sizes,i_lr,i_wd,i_epoch)
+#                                 logreg = MLPClassifier(solver=i_solver,hidden_layer_sizes=[10,10]
+#                                                        ,activation=i_activation, alpha=i_alpha
+#                                                        ,max_iter = i_max_iter, random_state=0)
+#                                 logreg.fit(X_train, y_train)
+                                logreg = tabular_learner(data, emb_drop=i_emb_drop, layers=i_hidden_layer_sizes, wd=i_wd, metrics=accuracy, silent = False)
+                                logreg.fit(i_epoch,lr=i_lr)
+                                endtime = datetime.datetime.now()
+                                if len(efitwarn) > 0: 
+                                    fitwarn = efitwarn[-1].message
+                                    print(fitwarn)
+                                else: 
+                                    fitwarn = ''
+                        except Exception as e:
+                            print('Exception: ',e)
+                            endtime = datetime.datetime.now()
+                            linear_resdf = linear_resdf.append({
+                                'proctime':str(endtime - starttime),
+                                'solver':i_solver,
+                                'layers':i_hidden_layer_sizes,
+                                'activation':i_activation,
+                                'alpha':i_alpha,
+                                'max_iter':i_max_iter,
+                                'Mess':str(e)
+                            },ignore_index=True)                        
+                            continue
+                            
+                        if plot: plot_feature_importances(X_test,logreg.feature_importances_,featurenames)
+                            
+                        linear_resdf1 = {
+                            'proctime':str(endtime - starttime),
+                            'solver':i_solver,
+                            'layers':i_hidden_layer_sizes,
+                            'activation':i_activation,
+                            'alpha':i_alpha,
+                            'max_iter':i_max_iter
+                        }
+                        linear_resdf2 = PrepareResults(masterframe,logreg,X_train,X_test,y_train,y_test,Xintex,testone,fitwarn,atr,str(endtime - starttime))
+                        linear_resdf1.update(linear_resdf2)
+                        linear_resdf = linear_resdf.append(linear_resdf1 ,ignore_index=True)
+    
     
     return linear_resdf
 
