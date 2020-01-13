@@ -402,11 +402,11 @@ def ExamineMLP(masterframe,Xintex,X_train, y_train,X_test, y_test,featurenames,t
                             with warnings.catch_warnings(record=True) as efitwarn:
                                 starttime = datetime.datetime.now()
                                 print(starttime,i_solver,i_hidden_layer_sizes,i_activation,i_alpha,i_max_iter)
-                                logreg = MLPClassifier(solver=i_solver,hidden_layer_sizes=[10,10]
+                                logreg = MLPClassifier(solver=i_solver,hidden_layer_sizes=i_hidden_layer_sizes
                                                        ,activation=i_activation, alpha=i_alpha
                                                        ,max_iter = i_max_iter, random_state=0)
                                 logreg.fit(X_train, y_train)
-                                #logreg = timelimitfit(logreg,X_train, y_train,30)
+                                #logreg = timelimitfit(logreg,X_train, y_train,5)
                                 endtime = datetime.datetime.now()
                                 if len(efitwarn) > 0: 
                                     fitwarn = efitwarn[-1].message
@@ -623,10 +623,10 @@ def PrepareResults(masterframe,logreg,X_train,X_test,y_train,y_test,Xintex,testo
                                                     , tecal
                                                    ,proctime))
     
-    for f in glob.glob("spin*"):
-        os.remove(f)
-    filename = 'spin'+ datetime.datetime.now().strftime("%d%m%y %H%M%S")
-    open(filename,'x').close()
+#     for f in glob.glob("spin*"):
+#         os.remove(f)
+#     filename = 'spin'+ datetime.datetime.now().strftime("%d%m%y %H%M%S")
+#     open(filename,'x').close()
     
     return linear_resdict
 
