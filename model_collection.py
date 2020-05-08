@@ -365,14 +365,14 @@ def ExamineMLP(masterframe,Xintex,X_train, y_train,X_test, y_test,featurenames,t
 ,'Te_0_50','Te_0_50_cnt','Te_0_60','Te_0_60_cnt','Te_0_70','Te_0_70_cnt','Te_0_80','Te_0_80_cnt','Te_0_90','Te_0_90_cnt'
 ,'Te_1_50','Te_1_50_cnt','Te_1_60','Te_1_60_cnt','Te_1_70','Te_1_70_cnt','Te_1_80','Te_1_80_cnt','Te_1_90','Te_1_90_cnt'])
     
-    solver = ['adam','lbfgs']#['adam','lbfgs','sgd'] #None
+    solver = ['lbfgs']#['adam','lbfgs','sgd'] #None
     hidden_layer_sizes = [[10],[100],[400],[800]
                           ,[10,10],[100,100],[400,400],[800,800]
                           ,[10,10,10],[100,100,100],[400,400,400],[800,800,800]
                           ,[10,10,10,10],[100,100,100,100],[400,400,400,400],[800,800,800,800]]
-    activation = ['tanh','identity', 'logistic', 'tanh', 'relu']   # ['tanh','identity', 'logistic', 'tanh', 'relu']
+    activation = ['tanh', 'relu']   # ['tanh','identity', 'logistic', 'relu']
     alpha = [0.00001,0.0001,0.01,0.1,1]  #'auto'
-    max_iter= [100,1000]
+    max_iter= [1000] # [100,1000]
 # learning_rate_init : double, optional, default 0.001 The initial learning rate used. It controls the step-size in updating the weights. Only used when solver=’sgd’ or ‘adam’.
 # shuffle : bool, optional, default True
 # beta_1 : float, optional, default 0.9
@@ -405,8 +405,8 @@ def ExamineMLP(masterframe,Xintex,X_train, y_train,X_test, y_test,featurenames,t
                                 logreg = MLPClassifier(solver=i_solver,hidden_layer_sizes=i_hidden_layer_sizes
                                                        ,activation=i_activation, alpha=i_alpha
                                                        ,max_iter = i_max_iter, random_state=0)
-                                logreg.fit(X_train, y_train)
-                                #logreg = timelimitfit(logreg,X_train, y_train,5)
+                                # logreg.fit(X_train, y_train)
+                                logreg = timelimitfit(logreg,X_train, y_train,5)
                                 endtime = datetime.datetime.now()
                                 if len(efitwarn) > 0: 
                                     fitwarn = efitwarn[-1].message
