@@ -58,8 +58,19 @@ def loaddata_nodateindex(datafile='uj_d.csv'):
     df['year'] = pd.DatetimeIndex(df['date']).year
     df['month'] = pd.DatetimeIndex(df['date']).month
     df['day'] = pd.DatetimeIndex(df['date']).day 
+    df['week'] = pd.DatetimeIndex(df['date']).week
     df = df.rename(index=str, columns={"date": "fulldate"})
     df.index.names = ['date']
+
+    #W1 data cum
+    df['monthID'] = (df.year.map('{0:04d}'.format)+df.month.map('{0:02d}'.format)).astype(int)
+    df['dayID'] = (df.year.map('{0:04d}'.format)+df.month.map('{0:02d}'.format)+df.day.map('{0:02d}'.format)).astype(int)
+    weekid = (df.year.map('{0:04d}'.format)+df.week.map('{0:02d}'.format)).astype(int)
+    year_plus1 = df.year + 1
+    year_minus1 = df.year - 1
+    weekid_plus1 = (year_plus1.map('{0:04d}'.format)+df.week.map('{0:02d}'.format)).astype(int)
+    weekid_minus1 = (year_minus1.map('{0:04d}'.format)+df.week.map('{0:02d}'.format)).astype(int)
+    df['weekID'] = np.where((df.month==1) & ((df.week == 52)|(df.week == 53)),weekid_minus1,np.where((df.month==12) & (df.week == 1),weekid_plus1,weekid))
     
     return df
     
@@ -937,4 +948,119 @@ def predictGARCHOnSlice(TS,order):
 
     return h1,mean
 
+
+def historyD1(prices,periods):
+    '''
+    :param prices; dataframe of OHLC currency data
+    :param periods - how long the history should be
+    '''
+    results = holder()
+
+    df = pd.DataFrame(index=prices.index)
+    for i in range(periods[0],0,-1):
+        columnname_hist = 'D1hist_close_'+str(i)
+        columnname_diff = 'D1hist_close_'+str(i)+'_diff'
+        df[columnname_diff] = prices.close.shift(periods=i)-prices.close
+        df[columnname_hist] = prices.close.shift(periods=i)
+        
+    dict = {}
+    dict[periods[0]] = df
+    results.df = dict
+    return results
+
+def historyW1(prices,periods):
+
+    results = holder()
+
+    W1df = pd.DataFrame()
+
+    W1df['W1high'] = prices.groupby('weekID')['high'].max()    
+    W1df['W1low'] = prices.groupby('weekID')['low'].min()    
+    W1df['W1open_day'] = prices.groupby('weekID')['dayID'].min()    
+    other = prices[['dayID','open']]
+    W1df = W1df.join(other.set_index('dayID'),on='W1open_day', how='inner')
+    W1df.rename(columns={"open": "W1open"},inplace=True)
+    W1df = W1df.drop(['W1open_day'],1)
+    
+    W1df['W1close_day'] = prices.groupby('weekID')['dayID'].max()    
+    other = prices[['dayID','close']]
+    W1df = W1df.join(other.set_index('dayID'),on='W1close_day', how='inner')
+    W1df.rename(columns={"close": "W1close"},inplace=True)
+    W1df = W1df.drop(['W1close_day'],1)
+    
+    Histdf = pd.DataFrame(index=W1df.index)
+    for i in range(periods[0],0,-1):
+        columnname_hist = 'W1hist_close_'+str(i)
+        Histdf[columnname_hist] = W1df.W1close.shift(periods=i)   
+    
+    
+    df = pd.DataFrame(index=prices.index)
+    df['weekID'] = prices.weekID
+    df['W1high_c'] = prices.groupby('weekID')['high'].cummax()    
+    df['W1low_c'] = prices.groupby('weekID')['low'].cummin()    
+    df['W1close_c'] = prices.close
+    df['W1open_day'] = prices.groupby('weekID')['dayID'].cummin()    
+    other = prices[['dayID','open']]
+    df = df.join(other.set_index('dayID'),on='W1open_day', how = 'inner')
+    df.rename(columns={"open": "W1open_c"},inplace=True)
+    
+    df = df.join(Histdf,on='weekID', rsuffix='_other')
+    for i in range(periods[0],0,-1):
+        columnname_hist = 'W1hist_close_'+str(i)
+        columnname_hist_diff = 'W1hist_close_'+str(i)+'_diff'
+        df[columnname_hist_diff] = df[columnname_hist] - df.W1close_c   
+
+    
+    dict = {}
+    dict[periods[0]] = df
+    results.df = dict
+    return results    
+
+
+def historyM1(prices,periods):
+
+    results = holder()
+    
+    M1df = pd.DataFrame()
+
+    M1df['M1high'] = prices.groupby('monthID')['high'].max()    
+    M1df['M1low'] = prices.groupby('monthID')['low'].min()    
+    M1df['M1open_day'] = prices.groupby('monthID')['dayID'].min()    
+    other = prices[['dayID','open']]
+    M1df = M1df.join(other.set_index('dayID'),on='M1open_day', how='inner')
+    M1df.rename(columns={"open": "M1open"},inplace=True)
+    M1df = M1df.drop(['M1open_day'],1)
+    
+    M1df['M1close_day'] = prices.groupby('monthID')['dayID'].max()    
+    other = prices[['dayID','close']]
+    M1df = M1df.join(other.set_index('dayID'),on='M1close_day', how='inner')
+    M1df.rename(columns={"close": "M1close"},inplace=True)
+    M1df = M1df.drop(['M1close_day'],1)
+    
+    Histdf = pd.DataFrame(index=M1df.index)
+
+    for i in range(periods[0],0,-1):
+        columnname_hist = 'M1hist_close_'+str(i)
+        Histdf[columnname_hist] = M1df.M1close.shift(periods=i)    
+    
+    df = pd.DataFrame(index=prices.index)
+    df['monthID'] = prices.monthID
+    df['M1high_c'] = prices.groupby('monthID')['high'].cummax()    
+    df['M1low_c'] = prices.groupby('monthID')['low'].cummin()    
+    df['M1close_c'] = prices.close
+    df['M1open_day'] = prices.groupby('monthID')['dayID'].cummin()    
+    other = prices[['dayID','open']]
+    df = df.join(other.set_index('dayID'),on='M1open_day', how = 'inner')
+    df.rename(columns={"open": "M1open_c"},inplace=True)
+
+    df = df.join(Histdf,on='monthID', rsuffix='_other')
+    for i in range(periods[0],0,-1):
+        columnname_hist = 'M1hist_close_'+str(i)
+        columnname_hist_diff = 'M1hist_close_'+str(i)+'_diff'
+        df[columnname_hist_diff] = df[columnname_hist] - df.M1close_c   
+        
+    dict = {}
+    dict[periods[0]] = df
+    results.df = dict
+    return results    
 
