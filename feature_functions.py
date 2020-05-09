@@ -958,10 +958,18 @@ def historyD1(prices,periods):
 
     df = pd.DataFrame(index=prices.index)
     for i in range(periods[0],0,-1):
-        columnname_hist = 'D1hist_close_'+str(i)
+#         columnname_hist = 'D1hist_close_'+str(i)
         columnname_diff = 'D1hist_close_'+str(i)+'_diff'
+#         df[columnname_hist] = prices.close.shift(periods=i)
         df[columnname_diff] = prices.close.shift(periods=i)-prices.close
-        df[columnname_hist] = prices.close.shift(periods=i)
+#         columnname_hist = 'D1hist_low_'+str(i)
+        columnname_diff = 'D1hist_low_'+str(i)+'_diff'
+#         df[columnname_hist] = prices.low.shift(periods=i)
+        df[columnname_diff] = prices.low.shift(periods=i)-prices.low
+#         columnname_hist = 'D1hist_high_'+str(i)
+        columnname_diff = 'D1hist_high_'+str(i)+'_diff'
+#         df[columnname_hist] = prices.high.shift(periods=i)
+        df[columnname_diff] = prices.high.shift(periods=i)-prices.high
         
     dict = {}
     dict[periods[0]] = df
@@ -992,6 +1000,10 @@ def historyW1(prices,periods):
     for i in range(periods[0],0,-1):
         columnname_hist = 'W1hist_close_'+str(i)
         Histdf[columnname_hist] = W1df.W1close.shift(periods=i)   
+        columnname_hist = 'W1hist_low_'+str(i)
+        Histdf[columnname_hist] = W1df.W1low.shift(periods=i)   
+        columnname_hist = 'W1hist_high_'+str(i)
+        Histdf[columnname_hist] = W1df.W1high.shift(periods=i)   
     
     
     df = pd.DataFrame(index=prices.index)
@@ -1003,13 +1015,28 @@ def historyW1(prices,periods):
     other = prices[['dayID','open']]
     df = df.join(other.set_index('dayID'),on='W1open_day', how = 'inner')
     df.rename(columns={"open": "W1open_c"},inplace=True)
+    df = df.drop(['W1open_day'],1)
     
     df = df.join(Histdf,on='weekID', rsuffix='_other')
     for i in range(periods[0],0,-1):
         columnname_hist = 'W1hist_close_'+str(i)
         columnname_hist_diff = 'W1hist_close_'+str(i)+'_diff'
         df[columnname_hist_diff] = df[columnname_hist] - df.W1close_c   
+        columnname_hist = 'W1hist_low_'+str(i)
+        columnname_hist_diff = 'W1hist_low_'+str(i)+'_diff'
+        df[columnname_hist_diff] = df[columnname_hist] - df.W1low_c   
+        columnname_hist = 'W1hist_high_'+str(i)
+        columnname_hist_diff = 'W1hist_high_'+str(i)+'_diff'
+        df[columnname_hist_diff] = df[columnname_hist] - df.W1high_c   
 
+    for i in range(periods[0],0,-1):
+        columnname_hist = 'W1hist_close_'+str(i)
+        df = df.drop([columnname_hist],1)
+        columnname_hist = 'W1hist_low_'+str(i)
+        df = df.drop([columnname_hist],1)
+        columnname_hist = 'W1hist_high_'+str(i)
+        df = df.drop([columnname_hist],1)
+        
     
     dict = {}
     dict[periods[0]] = df
@@ -1042,6 +1069,10 @@ def historyM1(prices,periods):
     for i in range(periods[0],0,-1):
         columnname_hist = 'M1hist_close_'+str(i)
         Histdf[columnname_hist] = M1df.M1close.shift(periods=i)    
+        columnname_hist = 'M1hist_low_'+str(i)
+        Histdf[columnname_hist] = M1df.M1low.shift(periods=i)    
+        columnname_hist = 'M1hist_high_'+str(i)
+        Histdf[columnname_hist] = M1df.M1high.shift(periods=i)    
     
     df = pd.DataFrame(index=prices.index)
     df['monthID'] = prices.monthID
@@ -1052,12 +1083,27 @@ def historyM1(prices,periods):
     other = prices[['dayID','open']]
     df = df.join(other.set_index('dayID'),on='M1open_day', how = 'inner')
     df.rename(columns={"open": "M1open_c"},inplace=True)
+    df = df.drop(['M1open_day'],1)
 
     df = df.join(Histdf,on='monthID', rsuffix='_other')
     for i in range(periods[0],0,-1):
         columnname_hist = 'M1hist_close_'+str(i)
         columnname_hist_diff = 'M1hist_close_'+str(i)+'_diff'
         df[columnname_hist_diff] = df[columnname_hist] - df.M1close_c   
+        columnname_hist = 'M1hist_low_'+str(i)
+        columnname_hist_diff = 'M1hist_low_'+str(i)+'_diff'
+        df[columnname_hist_diff] = df[columnname_hist] - df.M1low_c   
+        columnname_hist = 'M1hist_high_'+str(i)
+        columnname_hist_diff = 'M1hist_high_'+str(i)+'_diff'
+        df[columnname_hist_diff] = df[columnname_hist] - df.M1high_c   
+
+    for i in range(periods[0],0,-1):
+        columnname_hist = 'M1hist_close_'+str(i)
+        df = df.drop([columnname_hist],1)
+        columnname_hist = 'M1hist_low_'+str(i)
+        df = df.drop([columnname_hist],1)
+        columnname_hist = 'M1hist_high_'+str(i)
+        df = df.drop([columnname_hist],1)
         
     dict = {}
     dict[periods[0]] = df
