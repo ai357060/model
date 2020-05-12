@@ -305,7 +305,7 @@ def ExamineSVC(masterframe,Xintex,X_train, y_train,X_test, y_test,featurenames,t
                     for i_degree in degree:
                         if ((i_kernel != 'poly') & (i_degree > 2)):
                             continue
-                        if ((i_kernel == 'poly') & (i_degree > 2)& (i_gamma == 10)& (i_C = 1.0)):
+                        if ((i_kernel == 'poly') & (i_degree > 2)& (i_gamma == 10)& (i_C >= 1.0)):
                             continue
                 
                         try:
