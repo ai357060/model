@@ -284,7 +284,7 @@ def ExamineSVC(masterframe,Xintex,X_train, y_train,X_test, y_test,featurenames,t
 
     kernel = ['rbf','linear', 'poly',  'sigmoid'] #None # dla poly trzeba chyba inne parametry. Przy C = 100 i gamma = 1 robi się bardzo długo
     C = [0.001,0.01,0.1,1,10,100,1000]
-    gamma = ['auto_deprecated','auto',0.0001,0.001,0.01,0.1,1,10]   #None gamma = 1 długo przy degree 5, 
+    gamma = ['scale','auto',0.0001,0.001,0.01,0.1,1,10]   #None gamma = 1 długo przy degree 5, 
     max_iter = [-1]  #'auto'
     degree = [2,3,4,5] # degree=5 wolno dla poly gdy C>=100
     timeout = 5
@@ -304,6 +304,8 @@ def ExamineSVC(masterframe,Xintex,X_train, y_train,X_test, y_test,featurenames,t
                 for i_max_iter in max_iter:   
                     for i_degree in degree:
                         if ((i_kernel != 'poly') & (i_degree > 2)):
+                            continue
+                        if ((i_kernel == 'poly') & (i_degree > 2)& (i_gamma == 10)& (i_C = 1.0)):
                             continue
                 
                         try:
@@ -366,10 +368,14 @@ def ExamineMLP(masterframe,Xintex,X_train, y_train,X_test, y_test,featurenames,t
 ,'Te_1_50','Te_1_50_cnt','Te_1_60','Te_1_60_cnt','Te_1_70','Te_1_70_cnt','Te_1_80','Te_1_80_cnt','Te_1_90','Te_1_90_cnt'])
     
     solver = ['lbfgs']#['adam','lbfgs','sgd'] #None
+#     hidden_layer_sizes = [[10],[100],[400],[800]
+#                           ,[10,10],[100,100],[400,400],[800,800]
+#                           ,[10,10,10],[100,100,100],[400,400,400],[800,800,800]
+#                           ,[10,10,10,10],[100,100,100,100],[400,400,400,400],[800,800,800,800]]
     hidden_layer_sizes = [[10],[100],[400],[800]
-                          ,[10,10],[100,100],[400,400],[800,800]
-                          ,[10,10,10],[100,100,100],[400,400,400],[800,800,800]
-                          ,[10,10,10,10],[100,100,100,100],[400,400,400,400],[800,800,800,800]]
+                          ,[10,10],[100,100],[400,400]
+                          ,[10,10,10],[100,100,100]
+                          ,[10,10,10,10],[100,100,100,100]]    
     activation = ['tanh', 'relu']   # ['tanh','identity', 'logistic', 'relu']
     alpha = [0.00001,0.0001,0.01,0.1,1]  #'auto'
     max_iter= [1000] # [100,1000]
