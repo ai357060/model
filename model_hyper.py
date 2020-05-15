@@ -100,7 +100,7 @@ def runhypermodel(featsel='pca'):
     # from imblearn.over_sampling import BorderlineSMOTE
     # from imblearn.over_sampling import RandomOverSampler
     # from imblearn.over_sampling import SVMSMOTE
-    sm = SMOTE(random_state=27)
+    sm = SMOTE(random_state=27,sampling_strategy='not minority')
     # sm = ADASYN(random_state=27)
     # sm = BorderlineSMOTE(random_state=27)
     # sm = RandomOverSampler(random_state=27)
