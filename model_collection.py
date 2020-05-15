@@ -13,7 +13,7 @@ import datetime
 import multiprocessing
 import time
 import os
-from fastai.tabular import *
+# from fastai.tabular import *
 import glob
 
 #import threading 
