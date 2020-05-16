@@ -14,7 +14,7 @@ from model_collection import *
 
 pd.options.display.max_columns = None
 
-def runhypermodel(featsel='pca'):
+def runhypermodel(featsel='pca',featcount=[5,15,25],models=[['rf','svc','mlp'],['rf','svc','mlp'],['rf','svc','mlp']]):
 
     fver = 'v13'
     masterframe = loaddata_master('../Data/mf_UJ1440_'+fver+'.csv')
@@ -117,19 +117,21 @@ def runhypermodel(featsel='pca'):
     X_test_sc = scaler.transform(X_test)
     
     modeltype = {}
-    featcount = []
+    # featcount = []
     testone=False
     # featsel = 'rf'
     # featsel = 'svc'
     # featsel = 'pca'
     # featsel = 'all'
-    featcount.append(5);modeltype[5]   = ['rf','svc','mlp']
+    # featcount.append(5);modeltype[5]   = ['rf','svc','mlp']
     # featcount.append(10);modeltype[10] = ['rf','svc','mlp']
-    featcount.append(15);modeltype[15] = ['rf','svc','mlp']
+    # featcount.append(15);modeltype[15] = ['rf','svc','mlp']
     # featcount.append(20);modeltype[20] = ['rf','svc','mlp']
-    featcount.append(25);modeltype[25] = ['rf','svc','mlp']    
-    
+    # featcount.append(25);modeltype[25] = ['rf','svc','mlp']    
 
+    for i in range(0,len(featcount)):
+        modeltype[featcount[i]] = models[i]
+    
     if featsel != 'all':
         for i in featcount:
             print('FEATSEL:'+featsel+str(i)+'________________________________________________________________________________________')
